@@ -1,5 +1,6 @@
 # minigrep-rust
-Dự án học tập
+
+## Dự án học tập
 
 Chương trình mở một file được chỉ định, đọc từng dòng và tìm kiếm một chuỗi cho trước, nếu tìm thấy sẽ in dòng đó ra.  
 Tìm kiếm chuỗi "to" trong file poem.txt có phân biệt chữ hoa chữ thường  
