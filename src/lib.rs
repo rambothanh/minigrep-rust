@@ -10,23 +10,28 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(args: &[String]) -> Result<Config, &'static str>{
-	    if args.len() < 3 {
-		    //Se thong bao loi 
-			//va ket thuc chuong trinh ngay lap luc
-		    return Err("not enough arguments");
-			
-		}
-	    let query    = args[1].clone();
-	    let filename = args[2].clone();
-		
-		//neu bien muoi truong CASE_INSENSITIVE duoc set thi case_sensitive = true
-		//neu bien muoi truong CASE_INSENSITIVE khong duoc set thi
-		//case_sensitive = is_err() = false
-		//Set evn trong window bi loi, chua biet cach khac phuc
+	//hàm env::args sẽ trả về std::env::Args có đặt điểm (Trait) Iterator 
+    pub fn new (mut args: std::env::Args) -> Result<Config, &'static str> {
+		//giá trị đầu tiên của args mặc định chứa tên của 
+		//chương trình không phải là thứ chúng ta nhập vào
+		//Bỏ qua nó bằng cách gọi next() và không làm gì với
+		//giá trị trả lại
+		args.next();
+
+		let query = match args.next() {
+			Some(arg) => arg,
+			None => return Err("Không nhận được chuỗi query"),
+		};
+
+		let filename = match args.next() {
+			Some(arg) => arg,
+			None => return Err("Không nhận được chuỗi filename"),
+		};
+
 		let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
-		
-	    Ok(Config {query, filename, case_sensitive})
+
+		Ok(Config {query, filename, case_sensitive})
+
 	}
 }
 
@@ -87,26 +92,26 @@ Trust me.";
 }
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str>{
     
-	let mut results = Vec::new();
-	for line in contents.lines() {
-	    if line.contains(query) {
-		    results.push(line);
-		}
-	}
-	results
+	contents.lines()
+		.filter(|line| line.contains(query))
+		.collect()
 }
 
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str>{
-    let query = query.to_lowercase();
-	let mut results = Vec::new();
-	for line in contents.lines() {
-		//Vi query hien tai la String ma contains() su dung str 
-		// nen can them dau &
-	    if line.to_lowercase().contains(&query) {
-		    results.push(line);
-		}
-	}
-	results
+	let query = query.to_lowercase();
+	contents.lines()
+		.filter(|line| line.to_lowercase().contains(&query))
+		.collect()
+
+	// let mut results = Vec::new();
+	// for line in contents.lines() {
+	// 	//Vi query hien tai la String ma contains() su dung str 
+	// 	// nen can them dau &
+	//     if line.to_lowercase().contains(&query) {
+	// 	    results.push(line);
+	// 	}
+	// }
+	// results
 }
 
 
